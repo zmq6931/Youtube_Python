@@ -81,7 +81,7 @@ def download_youtube_video(url, output_path=None, progress_callback=None):
                 st.write("File size: Unknown")
             
             # Get the output file path
-            output_file = os.path.join(output_path, f"{info.get('title', 'video')}.{info.get('ext', 'mp4')}")
+            output_file = output_path+"\\"+ f"{info.get('title', 'video')}.{info.get('ext', 'mp4')}"
             st.write(f"\nDownload completed! Saved to: {output_file}")
             
             return output_file, info
@@ -110,6 +110,10 @@ url = st.text_input("Enter Youtube URL")
 save_path = st.text_input("Enter video save folder (required)")
 progress_placeholder = st.empty()  # 只出现一次
 
+# 规范化路径
+if save_path:
+    save_path = os.path.normpath(save_path)
+
 def progress_hook(d):
     if d['status'] == 'downloading':
         percent = d.get('_percent_str', '0.0%')
@@ -120,12 +124,15 @@ def progress_hook(d):
 if st.button("Download"):
     if not url:
         st.error("Please enter a valid Youtube URL")
-    elif not save_path.strip():
+    elif not save_path:
         st.error("Please enter a valid save folder path.")
     else:
         with st.spinner("Downloading..."):
+            # 推荐用绝对路径，防止不同系统下出错
+            abs_save_path = os.path.abspath(save_path)
+            os.makedirs(abs_save_path, exist_ok=True)
             output_file, result = download_youtube_video(
-                url, output_path=save_path, progress_callback=progress_hook
+                url, output_path=abs_save_path, progress_callback=progress_hook
             )
             # if output_file and os.path.exists(output_file):
             #     st.success("Download completed!")
