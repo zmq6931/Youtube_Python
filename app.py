@@ -16,12 +16,10 @@ def download_youtube_video(url, output_path=None, progress_callback=None):
         tuple: The path to the downloaded video file and the result message
     """
     try:
-        # Set default output path if none provided
-        # if output_path is None:
-        #     output_path = os.getcwd()
-        
-        # Create output directory if it doesn't exist
-        # os.makedirs(output_path, exist_ok=True)
+        if output_path is None or output_path.strip() == "":
+            output_path = "."
+        output_path = os.path.abspath(output_path)
+        os.makedirs(output_path, exist_ok=True)
         
         # Configure yt-dlp options
         ydl_opts = {
@@ -30,7 +28,7 @@ def download_youtube_video(url, output_path=None, progress_callback=None):
             'merge_output_format': 'mp4',
             
             # Output template
-            'outtmpl': output_path + "\\" + '%(title)s.%(ext)s',
+            'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
             
             # Network options
             'socket_timeout': 30,
@@ -81,7 +79,7 @@ def download_youtube_video(url, output_path=None, progress_callback=None):
                 st.write("File size: Unknown")
             
             # Get the output file path
-            output_file = output_path+"\\"+ f"{info.get('title', 'video')}.{info.get('ext', 'mp4')}"
+            output_file = os.path.join(output_path, f"{info.get('title', 'video')}.{info.get('ext', 'mp4')}")
             st.write(f"\nDownload completed! Saved to: {output_file}")
             
             return output_file, info
@@ -124,23 +122,19 @@ def progress_hook(d):
 if st.button("Download"):
     if not url:
         st.error("Please enter a valid Youtube URL")
-    elif not save_path:
-        st.error("Please enter a valid save folder path.")
     else:
         with st.spinner("Downloading....."):
-            # abs_save_path = os.path.abspath(save_path)
-            # os.makedirs(abs_save_path, exist_ok=True)
             output_file, result = download_youtube_video(
-                url, output_path=save_path, progress_callback=progress_hook
+                url, output_path=".", progress_callback=progress_hook
             )
-            # if output_file and os.path.exists(output_file):
-            #     st.success("Download completed!")
-            #     with open(output_file, "rb") as f:
-            #         st.download_button(
-            #             label="Download Video",
-            #             data=f,
-            #             file_name=os.path.basename(output_file),
-            #             mime="video/mp4"
-            #         )
-            # else:
-            #     st.error("Download failed or file not found. Please check the URL or try again.")
+            if output_file and os.path.exists(output_file):
+                st.success("Download completed!")
+                with open(output_file, "rb") as f:
+                    st.download_button(
+                        label="Download Video",
+                        data=f,
+                        file_name=os.path.basename(output_file),
+                        mime="video/mp4"
+                    )
+            else:
+                st.error("Download failed or file not found. Please check the URL or try again.")
