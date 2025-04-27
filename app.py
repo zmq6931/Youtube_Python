@@ -107,21 +107,21 @@ def download_youtube_video(url, output_path=None, progress_callback=None):
 st.title("Youtube Downloader")
 
 url = st.text_input("Enter Youtube URL")
-downloaded_file = None
-info = None
-error_msg = None
+progress_placeholder = st.empty()  # 只出现一次
 
 def progress_hook(d):
     if d['status'] == 'downloading':
         percent = d.get('_percent_str', '0.0%')
-        st.write(f"Downloading... {percent}")
+        progress_placeholder.write(f"Downloading... {percent}")
     elif d['status'] == 'finished':
-        st.success("Download finished!")
+        progress_placeholder.success("Download finished!")
 
 if st.button("Download"):
     if url:
         with st.spinner("Downloading..."):
-            output_file, result = download_youtube_video(url, output_path="downloads", progress_callback=progress_hook)
+            output_file, result = download_youtube_video(
+                url, output_path="downloads", progress_callback=progress_hook
+            )
             if output_file:
                 st.success("Download completed!")
                 with open(output_file, "rb") as f:
