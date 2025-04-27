@@ -30,7 +30,7 @@ def download_youtube_video(url, output_path=None, progress_callback=None):
             'merge_output_format': 'mp4',
             
             # Output template
-            'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
+            'outtmpl': output_path + "\\" + '%(title)s.%(ext)s',
             
             # Network options
             'socket_timeout': 30,
