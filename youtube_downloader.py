@@ -2,7 +2,6 @@ import yt_dlp
 import os
 from datetime import datetime
 
-
 def download_youtube_video(url, output_path=None):
     """
     Download a YouTube video from the given URL using yt-dlp.
