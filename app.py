@@ -120,9 +120,9 @@ if st.button("Download"):
     if url:
         with st.spinner("Downloading..."):
             output_file, result = download_youtube_video(
-                url, output_path="downloads", progress_callback=progress_hook
+                url, output_path=".", progress_callback=progress_hook
             )
-            if output_file:
+            if output_file and os.path.exists(output_file):
                 st.success("Download completed!")
                 with open(output_file, "rb") as f:
                     st.download_button(
@@ -132,6 +132,6 @@ if st.button("Download"):
                         mime="video/mp4"
                     )
             else:
-                st.error(f"Error: {result}")
+                st.error("Download failed or file not found. Please check the URL or try again.")
     else:
         st.error("Please enter a valid Youtube URL")
