@@ -107,6 +107,7 @@ def download_youtube_video(url, output_path=None, progress_callback=None):
 st.title("Youtube Downloader")
 
 url = st.text_input("Enter Youtube URL")
+save_path = st.text_input("Enter video save folder (required)")
 progress_placeholder = st.empty()  # 只出现一次
 
 def progress_hook(d):
@@ -117,21 +118,23 @@ def progress_hook(d):
         progress_placeholder.success("Download finished!")
 
 if st.button("Download"):
-    if url:
+    if not url:
+        st.error("Please enter a valid Youtube URL")
+    elif not save_path.strip():
+        st.error("Please enter a valid save folder path.")
+    else:
         with st.spinner("Downloading..."):
             output_file, result = download_youtube_video(
-                url, output_path=".", progress_callback=progress_hook
+                url, output_path=save_path, progress_callback=progress_hook
             )
-            if output_file and os.path.exists(output_file):
-                st.success("Download completed!")
-                with open(output_file, "rb") as f:
-                    st.download_button(
-                        label="Download Video",
-                        data=f,
-                        file_name=os.path.basename(output_file),
-                        mime="video/mp4"
-                    )
-            else:
-                st.error("Download failed or file not found. Please check the URL or try again.")
-    else:
-        st.error("Please enter a valid Youtube URL")
+            # if output_file and os.path.exists(output_file):
+            #     st.success("Download completed!")
+            #     with open(output_file, "rb") as f:
+            #         st.download_button(
+            #             label="Download Video",
+            #             data=f,
+            #             file_name=os.path.basename(output_file),
+            #             mime="video/mp4"
+            #         )
+            # else:
+            #     st.error("Download failed or file not found. Please check the URL or try again.")
